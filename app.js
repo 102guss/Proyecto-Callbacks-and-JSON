@@ -6,42 +6,70 @@ let biblioteca = {
     ]
 };
 
-// Función para simular la lectura de datos (asimilar la lectura de un archivo JSON)
+// Simular lectura de datos con callback
 function leerDatos(callback) {
     setTimeout(() => {
-        // Aquí simulas leer el JSON con un retraso de 1 segundo
         callback(biblioteca);
     }, 1000);
 }
 
-// Función para mostrar todos los libros en consola
+// Simular escritura de datos con callback
+function escribirDatos(nuevosDatos, callback) {
+    setTimeout(() => {
+        biblioteca = nuevosDatos;
+        callback("Datos guardados exitosamente.");
+    }, 1000);
+}
+
+// Mostrar todos los libros
 function mostrarLibros() {
     leerDatos((datos) => {
-        console.log("Inventario de libros:");
+        console.log("\n📚 Inventario de libros:");
         datos.libros.forEach((libro, index) => {
-            console.log(`${index + 1}. ${libro.titulo} - ${libro.autor} (${libro.disponible ? 'Disponible' : 'Prestado'})`);
+            console.log(`${index + 1}. ${libro.titulo} - ${libro.autor} [${libro.genero}] (${libro.disponible ? '✅ Disponible' : '❌ Prestado'})`);
         });
     });
 }
 
-// Función para agregar un nuevo libro
+// Agregar un nuevo libro
 function agregarLibro(titulo, autor, genero, disponible) {
     const nuevoLibro = { titulo, autor, genero, disponible };
-    // Aquí falta la simulación de escribir el libro en el "archivo" (es decir, agregarlo al objeto)
-    setTimeout(() => {
-        // Pista: deberías agregar el nuevo libro a `biblioteca.libros`
-    }, 1000);
+    leerDatos((datos) => {
+        datos.libros.push(nuevoLibro);
+        escribirDatos(datos, (mensaje) => {
+            console.log(`\n📘 Libro agregado: "${titulo}"`);
+            console.log(mensaje);
+        });
+    });
 }
 
-// Función para cambiar la disponibilidad de un libro
+// Cambiar disponibilidad de un libro
 function actualizarDisponibilidad(titulo, nuevoEstado) {
-    // Simula un retraso antes de actualizar la disponibilidad
-    setTimeout(() => {
-        // Pista: busca el libro por título y cambia la propiedad 'disponible' a nuevoEstado
-    }, 1000);
+    leerDatos((datos) => {
+        const libro = datos.libros.find(l => l.titulo === titulo);
+        if (libro) {
+            libro.disponible = nuevoEstado;
+            escribirDatos(datos, (mensaje) => {
+                console.log(`\n🔁 Disponibilidad actualizada: "${titulo}" ahora está ${nuevoEstado ? '✅ disponible' : '❌ prestado'}`);
+                console.log(mensaje);
+            });
+        } else {
+            console.log(`\n⚠️ Libro no encontrado: "${titulo}"`);
+        }
+    });
 }
 
-// Ejemplo de cómo ejecutar la aplicación
+// 🧪 Pruebas de ejecución (se ejecutan con delay por los setTimeout)
 mostrarLibros();
-agregarLibro("El principito", "Antoine de Saint-Exupéry", "Fábula", true);
-actualizarDisponibilidad("1984", false);
+
+setTimeout(() => {
+    agregarLibro("El principito", "Antoine de Saint-Exupéry", "Fábula", true);
+}, 2000);
+
+setTimeout(() => {
+    actualizarDisponibilidad("1984", false);
+}, 4000);
+
+setTimeout(() => {
+    mostrarLibros();
+}, 6000);
